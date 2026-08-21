@@ -1,0 +1,159 @@
+:is(.glass_surface, .glass_menu, .glass_card, .glass_control) {
+  --glass_highlight_alpha: 5%;
+  --glass_highlight_stop: 34%;
+  --glass_surface_tint: linear-gradient(
+    180deg,
+    rgb(var(--ui_accent) / 7%),
+    rgb(var(--ui_accent) / 3%)
+  );
+  --glass_radius: var(--ui_radius_card);
+  --glass_edge_color: var(--ui_stroke_strong);
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: var(--glass_radius);
+  background:
+    linear-gradient(
+      135deg,
+      rgb(255 255 255 / var(--glass_highlight_alpha)),
+      transparent var(--glass_highlight_stop)
+    ),
+    var(--glass_surface_tint),
+    linear-gradient(180deg, var(--ui_surface), var(--ui_surface_strong));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 20%),
+    inset 0 -1px 0 rgb(0 0 0 / 28%),
+    var(--ui_shadow);
+  -webkit-backdrop-filter: var(--ui_filter);
+  backdrop-filter: var(--ui_filter);
+}
+
+:where(.glass_surface, .glass_menu, .glass_card, .glass_control) {
+  position: relative;
+}
+
+.glass_surface {
+  --glass_radius: var(--ui_radius_panel);
+}
+
+.glass_menu,
+.glass_control {
+  --glass_radius: var(--ui_radius_control);
+}
+
+.glass_card {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 16%),
+    inset 0 -1px 0 rgb(0 0 0 / 22%),
+    var(--ui_shadow_tight);
+}
+
+:is(.glass_surface, .glass_menu, .glass_card, .glass_control) > * {
+  position: relative;
+  z-index: 1;
+}
+
+:is(.glass_surface, .glass_menu, .glass_card, .glass_control)::before {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  border-radius: var(--glass_radius);
+  box-shadow:
+    inset 0 0 0 1px var(--glass_edge_color),
+    inset 0 1px 0 rgb(255 255 255 / 10%);
+}
+
+.glass_reflection_canvas {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  transform: translate3d(-224px, -224px, 0);
+  transform-origin: top left;
+  will-change: transform;
+  contain: strict;
+}
+
+.interactive_glass {
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.interactive_glass:hover,
+.interactive_glass:focus-visible {
+  --glass_highlight_alpha: 7%;
+  --glass_highlight_stop: 42%;
+  --glass_edge_color: rgb(var(--ui_accent) / 38%);
+  --glass_surface_tint: linear-gradient(
+    180deg,
+    rgb(var(--ui_accent) / 11%),
+    rgb(var(--ui_accent) / 5%)
+  );
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 24%),
+    0 0 0 1px rgb(var(--ui_accent) / 10%),
+    0 12px 30px rgb(0 0 0 / 32%);
+}
+
+.interactive_glass:focus-visible {
+  box-shadow:
+    0 0 0 2px rgb(var(--ui_accent) / 30%),
+    0 12px 30px rgb(0 0 0 / 32%);
+}
+
+.interactive_glass:active {
+  transform: translateY(1px) scale(0.995);
+}
+
+.no_glass :is(
+    .glass_surface:not(.glass_modal),
+    .glass_card,
+    .glass_control
+  ) {
+  --ui_surface: rgb(12 19 18 / 96%);
+  --ui_surface_strong: rgb(7 12 11 / 98%);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --ui_surface: rgb(12 19 18 / 96%);
+    --ui_surface_strong: rgb(7 12 11 / 98%);
+  }
+
+  :is(.glass_surface, .glass_menu, .glass_card, .glass_control) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root {
+    --ui_surface: rgb(12 19 18 / 94%);
+    --ui_surface_strong: rgb(7 12 11 / 98%);
+    --ui_fill_hover: rgb(238 246 240 / 22%);
+    --ui_stroke: rgb(238 246 240 / 32%);
+  }
+
+  .glass_reflection_canvas {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interactive_glass {
+    transition: none;
+  }
+
+  .interactive_glass:active {
+    transform: none;
+  }
+}

@@ -1,0 +1,25 @@
+:root {
+  color-scheme: dark;
+  --ui_page: #060806;
+  --ui_page_soft: #0d1210;
+  --ui_surface: rgb(17 27 26 / 22%);
+  --ui_surface_strong: rgb(7 12 11 / 34%);
+  --ui_surface_solid: #101715;
+  --ui_text: #eef6f0;
+  --ui_text_muted: #b8c6bc;
+  --ui_text_subtle: #74827a;
+  --ui_accent: 10 132 95;
+  --ui_on_accent: #eef6f0;
+  --ui_warning: #f0b35b;
+  --ui_danger: #ff8f86;
+  --ui_fill: rgb(238 246 240 / 9%);
+  --ui_fill_hover: rgb(238 246 240 / 13%);
+  --ui_stroke: rgb(238 246 240 / 14%);
+  --ui_stroke_strong: rgb(255 255 255 / 20%);
+  --ui_shadow: 0 14px 36px rgb(0 0 0 / 34%);
+  --ui_shadow_tight: 0 8px 22px rgb(0 0 0 / 30%);
+  --ui_filter: blur(12px) saturate(1.24) brightness(1.05);
+  --ui_radius_panel: 18px;
+  --ui_radius_control: 13px;
+  --ui_radius_card: 14px;
+}

@@ -1,0 +1,27 @@
+# Frontend Design Guide
+
+- Build dark-mode-only interfaces by default. Do not add light theme branches, theme toggles, or `prefers-color-scheme` variants unless explicitly requested.
+- Set dark browser chrome with `color-scheme: dark`, dark page backgrounds, and high-contrast text, labels, controls, prompts, and error states.
+- Start from `src/lib/styles/ui.css` for global tokens, app shell, glass surfaces, controls, fields, segmented controls, and accessibility fallbacks.
+- Use `underscored_names` for CSS classes, TypeScript variables, functions, props, modules, and route/component filenames. Svelte component identifiers may start uppercase when needed by the compiler, but keep the underscore shape, such as `Route_component`.
+- Prefer the reusable components exported from `src/lib`: `Glass_surface`, `Glass_button`, `Glass_select`, `Segmented_control`, and `Text_field`. Use the underlying classes only for specialized controls that a component cannot express cleanly.
+- Keep `Glass_button` transparent at rest inside glass surfaces. Use `variant="standalone"` only without a material parent, `variant="primary"` for the main action, and `variant="danger"` for destructive actions.
+- Keep files under 200 lines. Split components, styles, and helpers before a file becomes hard to scan.
+- Keep page and tool layouts stable with explicit dimensions, `minmax()`, `aspect-ratio`, `clamp()`, and container constraints. Hover states, labels, loading text, and icons must not resize or shift the layout.
+- Do not scale font sizes with viewport width. Use `clamp()` only for spatial values unless there is a clear product reason.
+- Keep letter spacing at `0`; avoid negative letter spacing.
+- Use Liquid Glass styling for floating navigation, segmented controls, menus, and tool controls: translucent dark material, backdrop blur/saturation, edge highlights, and subtle specular gradients.
+- Keep glass as the interface/control layer, not general decoration. Avoid glass-on-glass stacks, dramatic white highlights, heavy pill rounding, and lowered text contrast.
+- Glass CSS must include fallbacks for missing backdrop-filter support, reduced transparency, increased contrast, and reduced motion.
+- Use the shared emerald selected state for tabs, segmented controls, radio-button buttons, pressed controls, active labels, and selected navigation. Use `data-active="true"`, `aria-pressed="true"`, or `aria-selected="true"` with `glass_control`.
+- Do not leave older selected fills or borders underneath the selected glow. One selected treatment should own the state.
+- Use familiar icons for icon-only tool actions. Add labels or tooltips where the meaning is not obvious.
+- Use segmented controls for modes, toggles/checkboxes for binary settings, sliders/steppers/inputs for numeric values, menus for option sets, and text buttons only for clear commands.
+- Radio choices that behave like mode buttons should be styled as glass button radios using the shared selected state.
+- Inputs need visible labels. Do not rely on placeholder-only fields.
+- Keep visible UI copy specific to the product. Do not add in-app text that explains the app's styling system, implementation details, or keyboard shortcuts.
+- Make text fit its container across mobile and desktop. Use `min-width: 0`, wrapping, truncation, or dynamic layout changes before text overlaps nearby UI.
+- Avoid one-note palettes. Do not let purple/purple-blue gradients, beige/cream/tan, dark blue/slate, or brown/orange palettes dominate unless the product requires it.
+- Avoid decorative orbs, bokeh blobs, and gradient blobs. Use product-relevant imagery or functional UI structure instead.
+- Cards should not be nested inside cards. Use cards for repeated items, modals, and genuinely framed tools; use full-width bands or unframed layouts for page sections.
+- For full-screen tools, avoid body/page scrollbars. Keep the app inside the viewport and scroll only the internal panel that owns overflow.

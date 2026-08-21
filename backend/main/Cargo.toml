@@ -1,0 +1,11 @@
+[package]
+name = "main"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cancels = { path = "../cancels" }
+services = { path = "../services" }
+routes = { path = "../routes" }
+tokio = { version = "1", features = ["full"] }
+variables = { path = "../variables" }

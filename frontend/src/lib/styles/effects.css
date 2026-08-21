@@ -1,0 +1,135 @@
+.glass_backdrop {
+  background: rgb(0 6 5 / 64%);
+  -webkit-backdrop-filter: blur(7px) saturate(1.12);
+  backdrop-filter: blur(7px) saturate(1.12);
+}
+
+.glass_hover_veil {
+  background: rgb(0 6 5 / 16%);
+  -webkit-backdrop-filter: blur(2px) saturate(1.04);
+  backdrop-filter: blur(2px) saturate(1.04);
+}
+
+.icon_button svg,
+.glass_icon {
+  transition: filter 160ms ease, transform 160ms ease;
+}
+
+.icon_button:hover:not(:disabled) svg,
+.icon_button:focus-visible svg,
+.glass_icon_glow {
+  filter:
+    drop-shadow(0 0 2px rgb(var(--ui_accent) / 88%))
+    drop-shadow(0 0 7px rgb(var(--ui_accent) / 58%))
+    drop-shadow(0 0 14px rgb(var(--ui_accent) / 30%));
+  transform: scale(1.05);
+}
+
+.glass_scroll {
+  scrollbar-color: rgb(var(--ui_accent) / 40%) transparent;
+  scrollbar-width: thin;
+}
+
+.glass_scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.glass_scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgb(var(--ui_accent) / 38%);
+}
+
+.glass_scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll_fade_frame {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  contain: paint;
+}
+
+.glass_scroll_fade {
+  --scroll-fade-size: 32px;
+  --scroll-fade-top: 0px;
+  --scroll-fade-bottom: 0px;
+  --scroll-fade-mask: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--scroll-fade-top),
+    #000 calc(100% - var(--scroll-fade-bottom)),
+    transparent 100%
+  );
+  mask-image: var(--scroll-fade-mask);
+  mask-repeat: no-repeat;
+  -webkit-mask-image: var(--scroll-fade-mask);
+  -webkit-mask-repeat: no-repeat;
+}
+
+.glass_scroll_fade[data-scroll-before] {
+  --scroll-fade-top: var(--scroll-fade-size);
+}
+
+.glass_scroll_fade[data-scroll-after] {
+  --scroll-fade-bottom: var(--scroll-fade-size);
+}
+
+/* Firefox paints these overlays more reliably than masks around scrollers. */
+@supports (-moz-appearance: none) {
+  .glass_scroll_fade {
+    --scroll-fade-overlay: var(--ui_surface_solid);
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .glass_scroll_fade::before,
+  .glass_scroll_fade::after {
+    position: absolute;
+    z-index: 4;
+    right: 0;
+    left: 0;
+    height: var(--scroll-fade-size);
+    pointer-events: none;
+    content: "";
+    background: linear-gradient(
+      to bottom,
+      var(--scroll-fade-overlay) 0%,
+      color-mix(in srgb, var(--scroll-fade-overlay) 62%, transparent) 48%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 100ms ease;
+  }
+
+  .glass_scroll_fade::before {
+    top: 0;
+  }
+
+  .glass_scroll_fade::after {
+    bottom: 0;
+    transform: scaleY(-1);
+  }
+
+  .glass_scroll_fade[data-scroll-before]::before,
+  .glass_scroll_fade[data-scroll-after]::after {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass_scroll_fade::before,
+  .glass_scroll_fade::after,
+  .icon_button svg,
+  .glass_icon {
+    transition: none;
+  }
+
+  .icon_button:hover:not(:disabled) svg,
+  .icon_button:focus-visible svg,
+  .glass_icon_glow {
+    transform: none;
+  }
+}

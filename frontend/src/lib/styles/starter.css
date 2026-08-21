@@ -1,0 +1,99 @@
+.app_shell {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background:
+    linear-gradient(135deg, rgb(var(--ui_accent) / 7%), transparent 42%),
+    linear-gradient(180deg, var(--ui_page_soft), var(--ui_page));
+}
+
+.starter_panel {
+  width: min(100%, 640px);
+  padding: clamp(20px, 5vw, 36px);
+  border-radius: var(--ui_radius_panel);
+}
+
+.content_stack {
+  display: grid;
+  gap: 14px;
+}
+
+.eyebrow,
+.content_stack h1,
+.muted_text {
+  margin: 0;
+}
+
+.eyebrow {
+  color: rgb(var(--ui_accent));
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.content_stack h1 {
+  color: var(--ui_text);
+  font-size: 2.25rem;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.muted_text {
+  color: var(--ui_text_muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.action_row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.action_row .settings_button {
+  margin-left: auto;
+}
+
+.settings_button svg {
+  width: 17px;
+  height: 17px;
+  fill: currentcolor;
+}
+
+.starter_controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 6px 0;
+}
+
+.wide_control {
+  grid-column: 1 / -1;
+}
+
+.status_line {
+  min-height: 20px;
+  margin: 0;
+  padding-top: 13px;
+  border-top: 1px solid var(--ui_stroke);
+  color: var(--ui_text_muted);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 560px) {
+  .starter_controls {
+    grid-template-columns: 1fr;
+  }
+
+  .wide_control {
+    grid-column: auto;
+  }
+
+  .action_row .settings_button {
+    margin-left: 0;
+  }
+}

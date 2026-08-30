@@ -1,0 +1,14 @@
+.flag-create-form .segmented-control,
+.flag-create-form > .glass-control {
+  width: 100%;
+}
+
+.flag-definition-card small {
+  text-transform: capitalize;
+}
+
+.flag-error {
+  margin: 0;
+  color: var(--ui-danger);
+  font-size: 0.78rem;
+}

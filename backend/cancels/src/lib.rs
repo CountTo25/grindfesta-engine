@@ -1,3 +1,5 @@
+#[cfg(test)]
+mod route_tests;
 pub mod routes;
 use colored::Colorize;
 use futures_util::{future::BoxFuture, stream::SplitSink, SinkExt, StreamExt};

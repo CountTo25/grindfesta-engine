@@ -1,8 +1,9 @@
+import { load_env_files, read_port } from "./run_environment";
+
 const rootDir = import.meta.dir;
 const backendDir = `${rootDir}/backend`;
 const frontendDir = `${rootDir}/frontend`;
 
-const initialEnv = new Set(Object.keys(process.env));
 const envFiles = [
   `${rootDir}/.env`,
   `${rootDir}/.env.local`,
@@ -11,63 +12,6 @@ const envFiles = [
   `${frontendDir}/.env`,
   `${frontendDir}/.env.local`,
 ];
-
-function parseEnvValue(raw: string): string {
-  const trimmed = raw.trim();
-
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    return trimmed.slice(1, -1);
-  }
-
-  const comment = trimmed.indexOf(" #");
-  return comment >= 0 ? trimmed.slice(0, comment).trim() : trimmed;
-}
-
-async function loadEnvFiles() {
-  for (const path of envFiles) {
-    const file = Bun.file(path);
-
-    if (!(await file.exists())) {
-      continue;
-    }
-
-    const text = await file.text();
-    for (const line of text.split(/\r?\n/)) {
-      const trimmed = line.trim();
-
-      if (!trimmed || trimmed.startsWith("#")) {
-        continue;
-      }
-
-      const match = trimmed.match(/^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
-      if (!match) {
-        continue;
-      }
-
-      const [, key, rawValue] = match;
-      if (initialEnv.has(key)) {
-        continue;
-      }
-
-      process.env[key] = parseEnvValue(rawValue);
-    }
-  }
-}
-
-function readPort(name: "API_PORT" | "SVELTE_PORT", fallback: number): number {
-  const value = process.env[name] ?? String(fallback);
-  const port = Number(value);
-
-  if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    throw new Error(`${name} must be a valid TCP port; received "${value}"`);
-  }
-
-  process.env[name] = String(port);
-  return port;
-}
 
 async function runCapture(command: string[]) {
   const proc = Bun.spawn(command, {
@@ -161,16 +105,17 @@ function spawnProcess(label: string, command: string[], cwd: string, env: Bun.En
   });
 }
 
-await loadEnvFiles();
+await load_env_files(envFiles);
 
-const apiPort = readPort("API_PORT", 9002);
-const sveltePort = readPort("SVELTE_PORT", 5173);
+const apiPort = read_port("API_PORT", 9002);
+const sveltePort = read_port("SVELTE_PORT", 5173);
 const svelteOrigin = `http://localhost:${sveltePort}`;
 const env = {
   ...process.env,
   API_PORT: String(apiPort),
   SVELTE_PORT: String(sveltePort),
   NATIVE_DEV_CORS: process.env.NATIVE_DEV_CORS ?? svelteOrigin,
+  VITE_API_ORIGIN: process.env.VITE_API_ORIGIN ?? `http://localhost:${apiPort}`,
 };
 
 await freePort(apiPort, "Rust API");

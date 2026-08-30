@@ -1,0 +1,143 @@
+.editor-app {
+  display: grid;
+  width: 100%;
+  height: 100dvh;
+  padding: 10px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgb(var(--ui-accent) / 7%), transparent 42%),
+    linear-gradient(180deg, var(--ui-page-soft), var(--ui-page));
+}
+
+.dependency-list li,
+.dependency-actions {
+  display: flex;
+  align-items: center;
+}
+
+.gate-error h1,
+.dependency-prompt h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.gate-error h1 {
+  font-size: 2rem;
+  line-height: 1.12;
+}
+
+.gate-panel {
+  width: min(100%, 560px);
+  place-self: center;
+  padding: clamp(22px, 5vw, 34px);
+}
+
+.gate-error,
+.dependency-prompt-content {
+  display: grid;
+  gap: 12px;
+}
+
+.error-text {
+  margin: 0;
+  color: var(--ui-danger);
+  line-height: 1.5;
+}
+
+.dependency-backdrop,
+.project-backdrop {
+  position: fixed;
+  z-index: 20;
+  display: grid;
+  inset: 0;
+  place-items: center;
+  padding: 18px;
+  background: rgb(1 4 3 / 74%);
+}
+
+.dependency-prompt,
+.project-dialog {
+  width: min(100%, 540px);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  padding: clamp(22px, 5vw, 32px);
+}
+
+.project-dialog {
+  width: min(100%, 600px);
+  padding: 24px;
+}
+
+.project-form {
+  display: grid;
+  gap: 18px;
+}
+
+.project-form h2,
+.project-error {
+  margin: 0;
+}
+
+.project-form h2 {
+  font-size: 1.45rem;
+  letter-spacing: 0;
+}
+
+.project-error {
+  color: var(--ui-danger);
+  font-size: 0.85rem;
+}
+
+.project-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.dependency-prompt h2 {
+  font-size: 1.55rem;
+}
+
+.dependency-list {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dependency-list li {
+  min-width: 0;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--ui-stroke);
+}
+
+.dependency-list li > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.dependency-list code {
+  color: var(--ui-text-subtle);
+}
+
+.install-link {
+  min-height: 40px;
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  text-decoration: none;
+}
+
+.dependency-actions {
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+@media (max-width: 560px) {
+  .gate-error h1 {
+    font-size: 1.65rem;
+  }
+}

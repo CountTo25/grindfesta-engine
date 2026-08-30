@@ -1,0 +1,81 @@
+.autocomplete-select {
+  position: relative;
+}
+
+.autocomplete-control {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.autocomplete-input {
+  padding-right: 36px;
+}
+
+.autocomplete-chevron {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  pointer-events: none;
+  color: var(--ui-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  transform: translateY(-56%);
+}
+
+.autocomplete-menu {
+  --ui-surface: rgb(12 20 17 / 98%);
+  --ui-surface-strong: rgb(5 11 9 / 99%);
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 5px);
+  right: 0;
+  left: 0;
+  display: grid;
+  max-height: 220px;
+  gap: 2px;
+  padding: 4px;
+  overflow-y: auto;
+  border-radius: 12px;
+}
+
+.autocomplete-menu-above {
+  top: auto;
+  bottom: calc(100% + 5px);
+}
+
+.autocomplete-option {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 9px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  color: var(--ui-text-muted);
+  text-align: left;
+}
+
+.autocomplete-option:is(:hover, [data-active="true"]) {
+  border-color: rgb(var(--ui-accent) / 24%);
+  background: var(--ui-fill-hover);
+  color: var(--ui-text);
+}
+
+.autocomplete-option[aria-selected="true"] {
+  color: rgb(var(--ui-accent));
+  font-weight: 700;
+}
+
+.autocomplete-empty {
+  padding: 9px;
+  color: var(--ui-text-subtle);
+  font-size: 0.76rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .autocomplete-input,
+  .autocomplete-option {
+    transition: none;
+  }
+}

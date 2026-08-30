@@ -1,0 +1,102 @@
+.engine-variables-editor {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  grid-column: 1 / -1;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.engine-variables-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 26px;
+  border-bottom: 1px solid var(--ui-stroke);
+}
+
+.engine-variables-heading p,
+.engine-variables-heading h1,
+.engine-variable-group h2,
+.engine-variables-error {
+  margin: 0;
+}
+
+.engine-variables-heading p {
+  margin-bottom: 3px;
+  color: rgb(var(--ui-accent));
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.engine-variables-heading h1 {
+  font-size: 1.25rem;
+}
+
+.engine-variable-groups {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  align-content: start;
+  overflow-y: auto;
+}
+
+.engine-variable-group {
+  min-width: 0;
+  padding: 22px 26px;
+  border-bottom: 1px solid var(--ui-stroke);
+}
+
+.engine-variable-group:nth-child(odd) {
+  border-right: 1px solid var(--ui-stroke);
+}
+
+.engine-variable-group h2 {
+  margin-bottom: 16px;
+  color: rgb(var(--ui-accent));
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.engine-variable-fields {
+  display: grid;
+  gap: 14px;
+}
+
+.engine-variable-field {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) minmax(130px, 0.55fr);
+  align-items: center;
+  gap: 18px;
+}
+
+.engine-variable-copy,
+.engine-variable-copy strong,
+.engine-variable-copy small {
+  display: block;
+  min-width: 0;
+}
+
+.engine-variable-copy small {
+  margin-top: 3px;
+  color: var(--ui-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.engine-variables-error {
+  padding: 12px 26px;
+  color: var(--ui-danger);
+  border-top: 1px solid var(--ui-stroke);
+}
+
+@media (max-width: 900px) {
+  .engine-variable-groups { grid-template-columns: minmax(0, 1fr); }
+  .engine-variable-group:nth-child(odd) { border-right: 0; }
+}
+
+@media (max-width: 560px) {
+  .engine-variable-field { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+}

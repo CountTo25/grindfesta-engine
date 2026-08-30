@@ -2,5 +2,6 @@
 /backend/target
 /frontend/dist
 /frontend/node_modules
+projects/
 backend/db-wal
 backend/db-shm

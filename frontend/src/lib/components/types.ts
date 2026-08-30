@@ -1,11 +1,12 @@
-export type Glass_button_variant = "transparent" | "standalone" | "primary" | "danger";
+export type GlassButtonVariant = "transparent" | "standalone" | "primary" | "danger";
 
-export type Glass_option = {
+export type GlassOption = {
   value: string;
   label: string;
+  description?: string;
   disabled?: boolean;
 };
 
-export type Glass_surface_tag = "div" | "section" | "article" | "aside" | "nav" | "header" | "footer";
+export type GlassSurfaceTag = "div" | "section" | "article" | "aside" | "nav" | "header" | "footer";
 
-export type Glass_surface_variant = "surface" | "menu" | "card";
+export type GlassSurfaceVariant = "surface" | "menu" | "card";

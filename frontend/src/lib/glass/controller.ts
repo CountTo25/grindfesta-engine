@@ -1,88 +1,88 @@
-import { create_reflection_canvas } from "./reflection_canvas";
-import { Glass_target_registry } from "./targets";
-import type { Resolved_glass_options } from "./types";
+import { createReflectionCanvas } from "./reflectionCanvas";
+import { GlassTargetRegistry } from "./targets";
+import type { ResolvedGlassOptions } from "./types";
 
-function has_glass(
+function hasGlass(
   target: EventTarget | null,
   selector: string,
-  include_ancestors = false,
+  includeAncestors = false,
 ): boolean {
   if (!(target instanceof HTMLElement)) return false;
   return Boolean(
     target.matches(selector) ||
       target.querySelector(selector) ||
-      (include_ancestors && target.closest(selector)),
+      (includeAncestors && target.closest(selector)),
   );
 }
 
-export function mount_glass_reflections(
-  options: Resolved_glass_options,
+export function mountGlassReflections(
+  options: ResolvedGlassOptions,
 ): (() => void) | undefined {
   if (!window.matchMedia("(pointer: fine)").matches) return;
-  const canvas = create_reflection_canvas(options);
+  const canvas = createReflectionCanvas(options);
   if (!canvas) return;
 
   let pointer: { x: number; y: number } | null = null;
   let frame: number | null = null;
-  let geometry_dirty = true;
-  let moving_geometry_count = 0;
-  const moving_targets = new Map<EventTarget, number>();
+  let geometryDirty = true;
+  let movingGeometryCount = 0;
+  const movingTargets = new Map<EventTarget, number>();
 
   const render = () => {
     frame = null;
-    if (geometry_dirty) registry.cache_geometry();
+    if (geometryDirty) registry.cacheGeometry();
     canvas.render(
       pointer,
-      registry.render_targets(),
-      registry.scroll_fade_regions(),
+      registry.renderTargets(),
+      registry.scrollFadeRegions(),
     );
-    geometry_dirty = false;
-    if (moving_geometry_count > 0) {
-      geometry_dirty = true;
-      schedule_render();
+    geometryDirty = false;
+    if (movingGeometryCount > 0) {
+      geometryDirty = true;
+      scheduleRender();
     }
   };
-  const schedule_render = () => {
+  const scheduleRender = () => {
     if (frame === null) frame = requestAnimationFrame(render);
   };
-  const invalidate_geometry = () => {
-    geometry_dirty = true;
-    schedule_render();
+  const invalidateGeometry = () => {
+    geometryDirty = true;
+    scheduleRender();
   };
-  const registry = new Glass_target_registry(options, invalidate_geometry);
+  const registry = new GlassTargetRegistry(options, invalidateGeometry);
 
-  const handle_pointer_move = (event: PointerEvent) => {
+  const handlePointerMove = (event: PointerEvent) => {
     pointer = { x: event.clientX, y: event.clientY };
-    schedule_render();
+    scheduleRender();
   };
-  const handle_pointer_exit = (event: PointerEvent) => {
+  const handlePointerExit = (event: PointerEvent) => {
     if (event.relatedTarget !== null) return;
     pointer = null;
-    schedule_render();
+    scheduleRender();
   };
-  const handle_motion_start = (event: Event) => {
+  const handleMotionStart = (event: Event) => {
     const target = event.target;
-    if (!target || !has_glass(target, options.selector)) return;
-    moving_targets.set(target, (moving_targets.get(target) ?? 0) + 1);
-    moving_geometry_count += 1;
-    invalidate_geometry();
+    if (!target || !hasGlass(target, options.selector)) return;
+    movingTargets.set(target, (movingTargets.get(target) ?? 0) + 1);
+    movingGeometryCount += 1;
+    invalidateGeometry();
   };
-  const handle_motion_end = (event: Event) => {
+  const handleMotionEnd = (event: Event) => {
     const target = event.target;
     if (!target) return;
-    const count = moving_targets.get(target) ?? 0;
+    const count = movingTargets.get(target) ?? 0;
     if (count === 0) return;
-    if (count === 1) moving_targets.delete(target);
-    else moving_targets.set(target, count - 1);
-    moving_geometry_count = Math.max(0, moving_geometry_count - 1);
-    invalidate_geometry();
+    if (count === 1) movingTargets.delete(target);
+    else movingTargets.set(target, count - 1);
+    movingGeometryCount = Math.max(0, movingGeometryCount - 1);
+    invalidateGeometry();
   };
-  const handle_resize = () => {
+  const handleResize = () => {
     canvas.resize();
-    invalidate_geometry();
+    invalidateGeometry();
   };
 
-  const mutation_observer = new MutationObserver((records) => {
+  const mutationObserver = new MutationObserver((records) => {
     if (
       records.some(
         (record) =>
@@ -96,18 +96,18 @@ export function mount_glass_reflections(
       records.some(
         (record) =>
           record.attributeName?.startsWith("data-scroll-") ||
-          has_glass(record.target, options.selector, true),
+          hasGlass(record.target, options.selector, true),
       )
-    ) invalidate_geometry();
+    ) invalidateGeometry();
   });
-  const event_controller = new AbortController();
-  const event_options = { passive: true, signal: event_controller.signal };
-  const mutation_root = options.root instanceof Document
+  const eventController = new AbortController();
+  const eventOptions = { passive: true, signal: eventController.signal };
+  const mutationRoot = options.root instanceof Document
     ? options.root.body
     : options.root;
 
   registry.refresh();
-  mutation_observer.observe(mutation_root, {
+  mutationObserver.observe(mutationRoot, {
     childList: true,
     subtree: true,
     attributes: true,
@@ -119,20 +119,20 @@ export function mount_glass_reflections(
       "data-scroll-after",
     ],
   });
-  window.addEventListener("pointermove", handle_pointer_move, event_options);
-  window.addEventListener("pointerout", handle_pointer_exit, event_options);
-  window.addEventListener("resize", handle_resize, event_options);
-  window.addEventListener("scroll", invalidate_geometry, {
-    ...event_options,
+  window.addEventListener("pointermove", handlePointerMove, eventOptions);
+  window.addEventListener("pointerout", handlePointerExit, eventOptions);
+  window.addEventListener("resize", handleResize, eventOptions);
+  window.addEventListener("scroll", invalidateGeometry, {
+    ...eventOptions,
     capture: true,
   });
   for (const name of ["pointerover", "pointerout", "focusin", "focusout"]) {
     document.addEventListener(name, (event) => {
-      if (has_glass(event.target, options.selector, true)) invalidate_geometry();
-    }, event_options);
+      if (hasGlass(event.target, options.selector, true)) invalidateGeometry();
+    }, eventOptions);
   }
   for (const name of ["transitionrun", "animationstart"]) {
-    document.addEventListener(name, handle_motion_start, event_options);
+    document.addEventListener(name, handleMotionStart, eventOptions);
   }
   for (const name of [
     "transitionend",
@@ -140,14 +140,14 @@ export function mount_glass_reflections(
     "animationend",
     "animationcancel",
   ]) {
-    document.addEventListener(name, handle_motion_end, event_options);
+    document.addEventListener(name, handleMotionEnd, eventOptions);
   }
 
   return () => {
-    mutation_observer.disconnect();
+    mutationObserver.disconnect();
     registry.destroy();
     if (frame !== null) cancelAnimationFrame(frame);
-    event_controller.abort();
+    eventController.abort();
     canvas.destroy();
   };
 }

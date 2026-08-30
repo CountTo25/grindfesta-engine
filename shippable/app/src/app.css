@@ -1,0 +1,134 @@
+@import "./end-run.css";
+
+html,
+body,
+#app {
+  width: 100%;
+  min-width: 320px;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+}
+
+.generated-game-root,
+.generated-game-root > .glass-game-shell {
+  height: 100%;
+}
+
+.generated-game-root .game-status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 4px;
+}
+
+.generated-game-root .game-status:empty {
+  display: none;
+}
+
+.generated-game-root .game-primary {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.generated-game-root .game-column-panel {
+  height: 100%;
+}
+
+.generated-queue,
+.generated-inventory {
+  display: grid;
+  min-height: 0;
+  align-content: start;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.queue-entry,
+.inventory-entry {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 0;
+  color: var(--ui-text);
+  font: inherit;
+  text-align: left;
+}
+
+.queue-entry {
+  cursor: pointer;
+}
+
+.queue-entry span,
+.inventory-entry span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inventory-entry span {
+  display: grid;
+  gap: 3px;
+}
+
+.inventory-entry span small {
+  color: var(--ui-text-subtle);
+  font-size: 0.62rem;
+  font-weight: 400;
+}
+
+.queue-entry small,
+.inventory-entry strong {
+  color: var(--ui-text-muted);
+  font: 700 0.66rem/1 var(--ui-font-numeric);
+}
+
+.inventory-cooldown {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventory-cooldown .glass-progress {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.inventory-cooldown small {
+  grid-column: 2;
+  color: var(--ui-text-subtle);
+  font: 0.6rem/1 var(--ui-font-numeric);
+}
+
+.generated-timeline {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.timeline-entry {
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+
+.timeline-entry time {
+  color: var(--ui-text-subtle);
+  font: 0.62rem/1 var(--ui-font-numeric);
+}
+
+.timeline-entry span {
+  color: var(--ui-text-muted);
+  font-size: 0.68rem;
+}

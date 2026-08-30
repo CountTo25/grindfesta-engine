@@ -1,0 +1,163 @@
+.action-editor {
+  display: grid;
+  grid-column: 1 / -1;
+  min-width: 0;
+  min-height: 0;
+  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.action-form-pane {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  align-content: start;
+  gap: 16px;
+  padding: 18px;
+  overflow-y: auto;
+  border-right: 1px solid var(--ui-stroke);
+}
+
+.action-create-form {
+  display: grid;
+  gap: 10px;
+}
+
+.action-create-form > .glass-control {
+  width: 100%;
+}
+
+.action-conditions {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid var(--ui-stroke);
+}
+
+.action-effects {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid var(--ui-stroke);
+}
+
+.action-effects > legend {
+  padding: 0 6px 0 0;
+}
+
+.action-effect-row {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: end;
+  padding-top: 8px;
+  border-top: 1px solid var(--ui-stroke);
+}
+
+.action-effect-row > .field-stack {
+  grid-column: 1;
+}
+
+.effect-remove-button {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 42px;
+  min-height: 38px;
+  align-self: end;
+  padding: 0;
+}
+
+.effect-add-button {
+  width: 100%;
+  min-height: 38px;
+}
+
+.action-conditions > legend {
+  padding: 0 6px 0 0;
+}
+
+.condition-logic {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.condition-logic .segmented-control {
+  padding: 3px;
+}
+
+.condition-logic .segmented-control .glass-control {
+  min-height: 34px;
+  padding: 0 8px;
+  font-size: 0.72rem;
+}
+
+.action-condition-row {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: end;
+  padding-top: 8px;
+  border-top: 1px solid var(--ui-stroke);
+}
+
+.action-condition-row .field-label {
+  font-size: 0.66rem;
+}
+
+.condition-not-button,
+.condition-remove-button {
+  grid-column: 2;
+  width: 42px;
+  min-height: 38px;
+  padding: 0;
+  font-size: 0.68rem;
+}
+
+.condition-not-button {
+  grid-row: 1;
+}
+
+.condition-remove-button {
+  grid-row: 2;
+}
+
+.condition-amount {
+  grid-column: 1;
+}
+
+.reveal-condition-description {
+  grid-column: 1 / -1;
+}
+
+.condition-add-button {
+  width: 100%;
+  min-height: 38px;
+}
+
+.action-error {
+  margin: 0;
+  color: var(--ui-danger);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 720px) {
+  .action-editor {
+    display: block;
+    overflow-y: auto;
+  }
+
+  .action-form-pane {
+    overflow: visible;
+    border-right: 0;
+    border-bottom: 1px solid var(--ui-stroke);
+  }
+}

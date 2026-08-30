@@ -3,6 +3,10 @@ name = "main"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "grindfesta-engine"
+path = "src/main.rs"
+
 [dependencies]
 cancels = { path = "../cancels" }
 services = { path = "../services" }

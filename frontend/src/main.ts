@@ -1,7 +1,7 @@
 import { mount } from "svelte";
-import App_component from "./app.svelte";
+import GrindfestaApp from "./GrindfestaApp.svelte";
 
-const app = mount(App_component, {
+const app = mount(GrindfestaApp, {
   target: document.getElementById("app")!,
 });
 

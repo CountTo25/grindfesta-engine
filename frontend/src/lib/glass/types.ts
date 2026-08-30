@@ -1,8 +1,8 @@
 import type { Readable } from "svelte/store";
 
-export type Corner_radii = [number, number, number, number];
+export type CornerRadii = [number, number, number, number];
 
-export type Affine_transform = {
+export type AffineTransform = {
   a: number;
   b: number;
   c: number;
@@ -11,7 +11,7 @@ export type Affine_transform = {
   f: number;
 };
 
-export type Rounded_rect = {
+export type RoundedRect = {
   left: number;
   top: number;
   right: number;
@@ -20,64 +20,65 @@ export type Rounded_rect = {
   height: number;
 };
 
-export type Glass_target = {
+export type GlassTarget = {
   element: HTMLElement;
   bounds: DOMRect | null;
-  local_rect: Rounded_rect | null;
-  transform: Affine_transform | null;
-  inverse_transform: Affine_transform | null;
-  visible_rect: DOMRectReadOnly | null;
-  radii: Corner_radii;
+  localRect: RoundedRect | null;
+  transform: AffineTransform | null;
+  inverseTransform: AffineTransform | null;
+  visibleRect: DOMRectReadOnly | null;
+  radii: CornerRadii;
   accent: [number, number, number];
-  occludes_reflection: boolean;
+  occludesReflection: boolean;
+  renderable: boolean;
 };
 
-export type Scroll_fade_region = {
+export type ScrollFadeRegion = {
   rect: DOMRect;
   size: number;
   before: boolean;
   after: boolean;
 };
 
-export type Glass_reflection_options = {
+export type GlassReflectionOptions = {
   root?: Document | HTMLElement;
   selector?: string;
-  occluder_selector?: string;
-  scroll_fade_selector?: string;
-  canvas_class?: string;
-  low_effects_class?: string;
-  accent_property?: string;
-  glow_radius?: number;
-  interior_radius?: number;
-  edge_width?: number;
-  max_pixel_ratio?: number;
+  occluderSelector?: string;
+  scrollFadeSelector?: string;
+  canvasClass?: string;
+  lowEffectsClass?: string;
+  accentProperty?: string;
+  glowRadius?: number;
+  interiorRadius?: number;
+  edgeWidth?: number;
+  maxPixelRatio?: number;
   enabled?: Readable<boolean>;
 };
 
-export type Resolved_glass_options = Required<
-  Omit<Glass_reflection_options, "root" | "enabled">
+export type ResolvedGlassOptions = Required<
+  Omit<GlassReflectionOptions, "root" | "enabled">
 > & {
   root: Document | HTMLElement;
 };
 
-export const default_glass_options = {
-  selector: ".glass_surface, .glass_menu, .glass_card, .glass_control",
-  occluder_selector: ".glass_menu, [data-glass-occluder]",
-  scroll_fade_selector: ".glass_scroll_fade",
-  canvas_class: "glass_reflection_canvas",
-  low_effects_class: "no_glass",
-  accent_property: "--ui_accent",
-  glow_radius: 112,
-  interior_radius: 72,
-  edge_width: 2,
-  max_pixel_ratio: 1.5,
-} satisfies Omit<Resolved_glass_options, "root">;
+export const defaultGlassOptions = {
+  selector: ".glass-surface, .glass-menu, .glass-card, .glass-control",
+  occluderSelector: ".glass-menu, [data-glass-occluder]",
+  scrollFadeSelector: ".glass-scroll-fade",
+  canvasClass: "glass-reflection-canvas",
+  lowEffectsClass: "no-glass",
+  accentProperty: "--ui-accent",
+  glowRadius: 112,
+  interiorRadius: 72,
+  edgeWidth: 2,
+  maxPixelRatio: 1.5,
+} satisfies Omit<ResolvedGlassOptions, "root">;
 
-export function resolve_glass_options(
-  options: Glass_reflection_options,
-): Resolved_glass_options {
+export function resolveGlassOptions(
+  options: GlassReflectionOptions,
+): ResolvedGlassOptions {
   return {
-    ...default_glass_options,
+    ...defaultGlassOptions,
     ...options,
     root: options.root ?? document,
   };

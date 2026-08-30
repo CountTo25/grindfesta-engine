@@ -448,7 +448,13 @@ pub(crate) fn find_route<'t, T: Send + Sync + 'static + Clone>(
                 .count();
             (r, route_segments, uri_segments, static_count)
         })
-        .filter(|(_, r_segs, u_segs, _)| r_segs.len() == u_segs.len() || r_segs.contains(&"*"))
+        .filter(|(_, route_segments, uri_segments, _)| {
+            if route_segments.contains(&"*") {
+                uri_segments.len() >= route_segments.len().saturating_sub(1)
+            } else {
+                route_segments.len() == uri_segments.len()
+            }
+        })
         .collect();
 
     candidates.sort_by_key(|(_, _, _, static_count)| Reverse(*static_count));

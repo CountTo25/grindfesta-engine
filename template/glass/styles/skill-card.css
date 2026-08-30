@@ -1,0 +1,95 @@
+.skill-card-shell {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.skill-card-shell:hover,
+.skill-card-shell:focus-within { z-index: 8; }
+
+.skill-card {
+  overflow: visible;
+  min-width: 0;
+  outline: none;
+}
+
+.skill-card:focus-visible {
+  outline: 2px solid rgb(from var(--ui-accent) r g b / 32%);
+  outline-offset: 2px;
+}
+
+.skill-card-header {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 8px 10px 7px;
+}
+
+.skill-card-header strong {
+  overflow: hidden;
+  font-size: 0.72rem;
+  font-weight: 620;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skill-card-icon {
+  display: inline-grid;
+  place-items: center;
+  color: var(--ui-accent);
+  filter: drop-shadow(0 0 7px rgb(from var(--ui-accent) r g b / 28%));
+}
+
+.skill-card-modifier {
+  color: var(--ui-text);
+  font: 700 0.72rem/1 var(--ui-font-numeric);
+  font-variant-numeric: tabular-nums;
+}
+
+.skill-progress-stack {
+  overflow: hidden;
+  margin: 0 2px 2px;
+  border-radius: 0 0 calc(var(--ui-radius-card) - 3px)
+    calc(var(--ui-radius-card) - 3px);
+}
+
+.skill-progress-stack .glass-progress { height: 4px; }
+
+.skill-card-details {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  display: grid;
+  width: 100%;
+  min-width: 190px;
+  gap: 8px;
+  padding: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-3px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.skill-card-shell:hover .skill-card-details,
+.skill-card-shell:focus-within .skill-card-details {
+  opacity: 1;
+  transform: none;
+}
+
+.skill-card-details div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.skill-card-details strong,
+.skill-card-details span { font-size: 0.65rem; }
+.skill-card-details strong { font-weight: 560; }
+.skill-card-details span { color: var(--ui-text-muted); font-family: var(--ui-font-numeric); }
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-card-details { transition: none; }
+}

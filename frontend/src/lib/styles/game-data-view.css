@@ -1,0 +1,159 @@
+.game-data-backdrop {
+  position: fixed;
+  z-index: 60;
+  display: grid;
+  inset: 0;
+  place-items: center;
+  padding: 18px;
+  background: rgb(1 4 3 / 82%);
+}
+
+.game-data-dialog {
+  display: grid;
+  width: min(980px, 100%);
+  height: min(740px, calc(100dvh - 36px));
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.game-data-header,
+.game-data-footer {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 16px;
+}
+
+.game-data-header {
+  border-bottom: 1px solid var(--ui-stroke);
+}
+
+.game-data-header > div,
+.game-data-selection {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.game-data-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.game-data-tree {
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+  overflow: auto;
+  background: rgb(2 8 6 / 38%);
+}
+
+.game-data-node-row {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  grid-template-columns: 18px minmax(120px, 0.7fr) minmax(100px, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 9px 5px calc(9px + var(--game-data-depth) * 18px);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  color: var(--ui-text-muted);
+  text-align: left;
+}
+
+.game-data-node-row:hover,
+.game-data-node-row:focus-visible {
+  border-color: rgb(var(--ui-accent) / 24%);
+  background: var(--ui-fill-hover);
+  color: var(--ui-text);
+}
+
+.game-data-node-row.selected {
+  border-color: rgb(var(--ui-accent) / 55%);
+  background: rgb(var(--ui-accent) / 13%);
+  color: var(--ui-text);
+}
+
+.game-data-node-row code,
+.game-data-selection code,
+.game-data-field-button code {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-data-disclosure {
+  color: rgb(var(--ui-accent));
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.game-data-leaf-marker {
+  width: 5px;
+  height: 5px;
+  justify-self: center;
+  border-radius: 50%;
+  background: var(--ui-text-subtle);
+}
+
+.game-data-value {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ui-text-subtle);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-data-type {
+  color: var(--ui-text-subtle);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.game-data-footer {
+  border-top: 1px solid var(--ui-stroke);
+}
+
+.game-data-selection {
+  flex: 1;
+}
+
+.game-data-selection > span:last-child {
+  overflow: hidden;
+  color: var(--ui-text-subtle);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-data-field-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  justify-content: flex-start;
+  padding: 0 10px;
+  color: var(--ui-text-muted);
+  text-align: left;
+}
+
+@media (max-width: 620px) {
+  .game-data-node-row {
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+  }
+
+  .game-data-value {
+    display: none;
+  }
+}

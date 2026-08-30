@@ -1,10 +1,10 @@
 import type {
-  Affine_transform,
-  Corner_radii,
-  Rounded_rect,
+  AffineTransform,
+  CornerRadii,
+  RoundedRect,
 } from "./types";
 
-export function read_length(value: string): number {
+export function readLength(value: string): number {
   const length = Number.parseFloat(value);
   return Number.isFinite(length) ? length : 0;
 }
@@ -13,45 +13,45 @@ function clamp(value: number, minimum: number, maximum: number): number {
   return Math.max(minimum, Math.min(maximum, value));
 }
 
-export function nearest_point_on_rounded_edge(
+export function nearestPointOnRoundedEdge(
   x: number,
   y: number,
-  rect: Rounded_rect,
-  radii: Corner_radii,
+  rect: RoundedRect,
+  radii: CornerRadii,
 ): { x: number; y: number } {
   const radius = clamp(
     Math.max(...radii),
     0,
     Math.min(rect.width, rect.height) / 2,
   );
-  const center_x = (rect.left + rect.right) / 2;
-  const center_y = (rect.top + rect.bottom) / 2;
-  const half_width = rect.width / 2;
-  const half_height = rect.height / 2;
-  const relative_x = x - center_x;
-  const relative_y = y - center_y;
-  const inner_x = clamp(relative_x, radius - half_width, half_width - radius);
-  const inner_y = clamp(relative_y, radius - half_height, half_height - radius);
-  const delta_x = relative_x - inner_x;
-  const delta_y = relative_y - inner_y;
-  const corner_distance = Math.hypot(delta_x, delta_y);
+  const centerX = (rect.left + rect.right) / 2;
+  const centerY = (rect.top + rect.bottom) / 2;
+  const halfWidth = rect.width / 2;
+  const halfHeight = rect.height / 2;
+  const relativeX = x - centerX;
+  const relativeY = y - centerY;
+  const innerX = clamp(relativeX, radius - halfWidth, halfWidth - radius);
+  const innerY = clamp(relativeY, radius - halfHeight, halfHeight - radius);
+  const deltaX = relativeX - innerX;
+  const deltaY = relativeY - innerY;
+  const cornerDistance = Math.hypot(deltaX, deltaY);
 
-  if (corner_distance > 0) {
+  if (cornerDistance > 0) {
     return {
-      x: center_x + inner_x + (delta_x / corner_distance) * radius,
-      y: center_y + inner_y + (delta_y / corner_distance) * radius,
+      x: centerX + innerX + (deltaX / cornerDistance) * radius,
+      y: centerY + innerY + (deltaY / cornerDistance) * radius,
     };
   }
-  if (half_width - Math.abs(relative_x) < half_height - Math.abs(relative_y)) {
-    return { x: relative_x < 0 ? rect.left : rect.right, y };
+  if (halfWidth - Math.abs(relativeX) < halfHeight - Math.abs(relativeY)) {
+    return { x: relativeX < 0 ? rect.left : rect.right, y };
   }
-  return { x, y: relative_y <= 0 ? rect.top : rect.bottom };
+  return { x, y: relativeY <= 0 ? rect.top : rect.bottom };
 }
 
-function multiply_transforms(
-  outer: Affine_transform,
-  inner: Affine_transform,
-): Affine_transform {
+function multiplyTransforms(
+  outer: AffineTransform,
+  inner: AffineTransform,
+): AffineTransform {
   return {
     a: outer.a * inner.a + outer.c * inner.b,
     b: outer.b * inner.a + outer.d * inner.b,
@@ -62,7 +62,7 @@ function multiply_transforms(
   };
 }
 
-function invert_transform(transform: Affine_transform): Affine_transform | null {
+function invertTransform(transform: AffineTransform): AffineTransform | null {
   const determinant = transform.a * transform.d - transform.b * transform.c;
   if (Math.abs(determinant) < Number.EPSILON) return null;
   return {
@@ -75,8 +75,8 @@ function invert_transform(transform: Affine_transform): Affine_transform | null 
   };
 }
 
-export function transform_point(
-  transform: Affine_transform,
+export function transformPoint(
+  transform: AffineTransform,
   x: number,
   y: number,
 ): { x: number; y: number } {
@@ -86,59 +86,59 @@ export function transform_point(
   };
 }
 
-function read_border_box_length(
+function readBorderBoxLength(
   element: HTMLElement,
   style: CSSStyleDeclaration,
   axis: "width" | "height",
 ): number {
-  const length = read_length(style[axis]);
+  const length = readLength(style[axis]);
   if (length <= 0) return axis === "width" ? element.offsetWidth : element.offsetHeight;
   if (style.boxSizing === "border-box") return length;
   const additions = axis === "width"
     ? [style.paddingLeft, style.paddingRight, style.borderLeftWidth, style.borderRightWidth]
     : [style.paddingTop, style.paddingBottom, style.borderTopWidth, style.borderBottomWidth];
-  return length + additions.reduce((sum, value) => sum + read_length(value), 0);
+  return length + additions.reduce((sum, value) => sum + readLength(value), 0);
 }
 
-export function read_element_transform(
+export function readElementTransform(
   element: HTMLElement,
   bounds: DOMRect,
   style: CSSStyleDeclaration,
 ): {
-  local_rect: Rounded_rect;
-  transform: Affine_transform;
-  inverse_transform: Affine_transform | null;
+  localRect: RoundedRect;
+  transform: AffineTransform;
+  inverseTransform: AffineTransform | null;
 } {
-  const width = read_border_box_length(element, style, "width");
-  const height = read_border_box_length(element, style, "height");
-  const local_rect = { left: 0, top: 0, right: width, bottom: height, width, height };
-  let linear: Affine_transform = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
+  const width = readBorderBoxLength(element, style, "width");
+  const height = readBorderBoxLength(element, style, "height");
+  const localRect = { left: 0, top: 0, right: width, bottom: height, width, height };
+  let linear: AffineTransform = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
 
   for (let current: HTMLElement | null = element; current; current = current.parentElement) {
     const value = getComputedStyle(current).transform;
     if (value === "none") continue;
     const matrix = new DOMMatrixReadOnly(value);
-    linear = multiply_transforms(
+    linear = multiplyTransforms(
       { a: matrix.a, b: matrix.b, c: matrix.c, d: matrix.d, e: 0, f: 0 },
       linear,
     );
   }
 
   const corners = [
-    transform_point(linear, 0, 0),
-    transform_point(linear, width, 0),
-    transform_point(linear, 0, height),
-    transform_point(linear, width, height),
+    transformPoint(linear, 0, 0),
+    transformPoint(linear, width, 0),
+    transformPoint(linear, 0, height),
+    transformPoint(linear, width, height),
   ];
   const transform = {
     ...linear,
     e: bounds.left - Math.min(...corners.map(({ x }) => x)),
     f: bounds.top - Math.min(...corners.map(({ y }) => y)),
   };
-  return { local_rect, transform, inverse_transform: invert_transform(transform) };
+  return { localRect, transform, inverseTransform: invertTransform(transform) };
 }
 
-export function read_accent(
+export function readAccent(
   style: CSSStyleDeclaration,
   property: string,
 ): [number, number, number] {
@@ -146,7 +146,7 @@ export function read_accent(
   return channels?.length === 3 ? [channels[0], channels[1], channels[2]] : [10, 132, 95];
 }
 
-export function read_visible_rect(
+export function readVisibleRect(
   element: HTMLElement,
   bounds: DOMRect,
 ): DOMRectReadOnly {
@@ -156,15 +156,15 @@ export function read_visible_rect(
   let bottom = Math.min(window.innerHeight, bounds.bottom);
   for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
     const style = getComputedStyle(ancestor);
-    const clips_x = style.overflowX !== "visible";
-    const clips_y = style.overflowY !== "visible";
-    if (!clips_x && !clips_y) continue;
+    const clipsX = style.overflowX !== "visible";
+    const clipsY = style.overflowY !== "visible";
+    if (!clipsX && !clipsY) continue;
     const rect = ancestor.getBoundingClientRect();
-    if (clips_x) {
+    if (clipsX) {
       left = Math.max(left, rect.left);
       right = Math.min(right, rect.right);
     }
-    if (clips_y) {
+    if (clipsY) {
       top = Math.max(top, rect.top);
       bottom = Math.min(bottom, rect.bottom);
     }

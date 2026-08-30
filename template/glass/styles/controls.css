@@ -1,0 +1,139 @@
+.glass-control {
+  display: inline-grid;
+  min-width: 0;
+  min-height: 40px;
+  place-items: center;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  outline: none;
+  color: var(--ui-text-muted);
+  font: 700 0.78rem/1 var(--ui-font-body);
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.glass-control:hover:not(:disabled),
+.glass-control:focus-visible {
+  --glass-edge-color: rgb(from var(--ui-accent) r g b / 48%);
+  color: var(--ui-text);
+}
+
+.glass-control:focus-visible,
+.glass-icon-button:focus-visible {
+  outline: 2px solid rgb(from var(--ui-accent) r g b / 30%);
+  outline-offset: 2px;
+}
+
+.glass-control:active:not(:disabled),
+.glass-icon-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.glass-control:disabled,
+.glass-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+.glass-control[data-variant="primary"],
+.glass-control:is([data-active="true"], [aria-pressed="true"]) {
+  --glass-edge-color: rgb(from var(--ui-accent) r g b / 68%);
+  --glass-surface-tint: linear-gradient(
+    180deg,
+    rgb(from var(--ui-accent) r g b / 34%),
+    rgb(from var(--ui-accent) r g b / 16%)
+  );
+  color: var(--ui-on-accent);
+  box-shadow:
+    inset 0 1px 0 rgb(208 255 241 / 22%),
+    0 10px 22px rgb(from var(--ui-accent) r g b / 15%);
+}
+
+.glass-control[data-variant="danger"] {
+  --ui-accent: var(--ui-danger);
+}
+
+.glass-control[data-compact="true"] {
+  min-height: 32px;
+  padding-inline: 10px;
+  font-size: 0.7rem;
+}
+
+.glass-control[data-full-width="true"] {
+  width: 100%;
+}
+
+.glass-icon-button {
+  position: relative;
+  display: inline-grid;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  outline: none;
+  background: rgb(255 255 255 / 2%);
+  color: var(--ui-text-muted);
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    color 140ms ease,
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.glass-icon-button[data-size="small"] {
+  width: 26px;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 8px;
+}
+
+.glass-icon-button:hover:not(:disabled),
+.glass-icon-button:focus-visible,
+.glass-icon-button[data-active="true"] {
+  border-color: rgb(from var(--ui-accent) r g b / 28%);
+  background: rgb(from var(--ui-accent) r g b / 14%);
+  color: var(--ui-accent);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 11%),
+    0 0 12px rgb(from var(--ui-accent) r g b / 14%);
+  text-shadow: 0 0 9px rgb(from var(--ui-accent) r g b / 68%);
+}
+
+.glass-button-content,
+.glass-icon-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.glass-icon-badge {
+  position: absolute;
+  z-index: 4;
+  top: -4px;
+  right: -4px;
+  display: grid;
+  min-width: 14px;
+  height: 14px;
+  place-items: center;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: rgb(from var(--ui-accent) r g b / 92%);
+  color: var(--ui-on-accent);
+  font: 800 8px/1 var(--ui-font-body);
+  box-shadow: 0 0 9px rgb(from var(--ui-accent) r g b / 48%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-control,
+  .glass-icon-button {
+    transition: none;
+  }
+}

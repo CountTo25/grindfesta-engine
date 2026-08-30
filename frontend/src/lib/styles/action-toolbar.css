@@ -1,0 +1,128 @@
+.action-preview-toolbar {
+  display: grid;
+  min-width: 0;
+  border-bottom: 1px solid var(--ui-stroke);
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 3%), transparent 48%),
+    var(--ui-surface-strong);
+}
+
+.action-skill-toolbar,
+.action-filter-toolbar {
+  display: flex;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.action-skill-toolbar {
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--ui-stroke);
+}
+
+.action-filter-toolbar {
+  align-items: end;
+  gap: 12px;
+  padding: 12px 18px;
+}
+
+.action-location-filter,
+.action-title-filter {
+  width: 190px;
+  flex: 0 0 auto;
+}
+
+.action-location-filter .glass-select,
+.action-title-filter .text-input {
+  width: 100%;
+}
+
+.action-skill-preview {
+  display: grid;
+  width: 288px;
+  flex: 0 0 auto;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--ui-stroke);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 4%), transparent 52%),
+    rgb(8 19 15 / 58%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%);
+}
+
+.action-skill-preview-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 2px;
+}
+
+.action-skill-preview-heading > .field-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-total-modifier {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--ui-text-subtle);
+  font-size: 0.56rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.action-total-modifier strong {
+  color: var(--ui-text);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.action-level-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.action-level-field {
+  display: grid;
+  gap: 3px;
+  color: var(--ui-text-muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+.action-level-field span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-level-input {
+  min-height: 32px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .action-skill-toolbar,
+  .action-filter-toolbar {
+    padding-inline: 14px;
+  }
+
+  .action-location-filter,
+  .action-title-filter {
+    width: 100%;
+  }
+
+  .action-skill-preview {
+    width: 260px;
+  }
+}

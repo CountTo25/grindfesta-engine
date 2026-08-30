@@ -1,33 +1,33 @@
 import { writable, type Readable } from "svelte/store";
 
-const storage_key = "simple-rust-svelte:glass-reflections";
+const storageKey = "simple-rust-svelte:glass-reflections";
 
-function read_preference(): boolean {
+function readPreference(): boolean {
   if (typeof localStorage === "undefined") return true;
   try {
-    return localStorage.getItem(storage_key) !== "off";
+    return localStorage.getItem(storageKey) !== "off";
   } catch {
     return true;
   }
 }
 
-const preference = writable(read_preference(), (set) => {
+const preference = writable(readPreference(), (set) => {
   if (typeof window === "undefined") return;
-  const handle_storage = (event: StorageEvent) => {
-    if (event.key === storage_key) set(event.newValue !== "off");
+  const handleStorage = (event: StorageEvent) => {
+    if (event.key === storageKey) set(event.newValue !== "off");
   };
-  window.addEventListener("storage", handle_storage);
-  return () => window.removeEventListener("storage", handle_storage);
+  window.addEventListener("storage", handleStorage);
+  return () => window.removeEventListener("storage", handleStorage);
 });
 
-export const glass_reflections_enabled: Readable<boolean> = {
+export const glassReflectionsEnabled: Readable<boolean> = {
   subscribe: preference.subscribe,
 };
 
-export function set_glass_reflections_enabled(enabled: boolean): void {
+export function setGlassReflectionsEnabled(enabled: boolean): void {
   preference.set(enabled);
   try {
-    localStorage.setItem(storage_key, enabled ? "on" : "off");
+    localStorage.setItem(storageKey, enabled ? "on" : "off");
   } catch {
     // The in-memory preference remains usable when storage is unavailable.
   }

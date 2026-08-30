@@ -1,0 +1,149 @@
+:is(.glass-surface, .glass-menu, .glass-card, .glass-control) {
+  --glass-highlight-alpha: 5%;
+  --glass-highlight-stop: 34%;
+  --glass-radius: var(--ui-radius-card);
+  --glass-edge-color: var(--ui-stroke-strong);
+  --glass-surface-tint: linear-gradient(
+    180deg,
+    rgb(from var(--ui-accent) r g b / 7%),
+    rgb(from var(--ui-accent) r g b / 3%)
+  );
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: var(--glass-radius);
+  background:
+    linear-gradient(
+      135deg,
+      rgb(255 255 255 / var(--glass-highlight-alpha)),
+      transparent var(--glass-highlight-stop)
+    ),
+    var(--glass-surface-tint),
+    linear-gradient(180deg, var(--ui-surface), var(--ui-surface-strong));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 20%),
+    inset 0 -1px 0 rgb(0 0 0 / 28%),
+    var(--ui-shadow);
+  -webkit-backdrop-filter: var(--ui-filter);
+  backdrop-filter: var(--ui-filter);
+}
+
+.glass-surface {
+  --glass-radius: var(--ui-radius-panel);
+}
+
+.glass-menu,
+.glass-control {
+  --glass-radius: var(--ui-radius-control);
+}
+
+.glass-card {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 16%),
+    inset 0 -1px 0 rgb(0 0 0 / 22%),
+    var(--ui-shadow-tight);
+}
+
+:is(.glass-surface, .glass-menu, .glass-card, .glass-control) > * {
+  position: relative;
+  z-index: 1;
+}
+
+:is(.glass-surface, .glass-menu, .glass-card, .glass-control)::before {
+  position: absolute;
+  pointer-events: none;
+  content: "";
+  border-radius: inherit;
+}
+
+:is(.glass-surface, .glass-menu, .glass-card, .glass-control)::before {
+  z-index: 3;
+  inset: 0;
+  box-shadow:
+    inset 0 0 0 1px var(--glass-edge-color),
+    inset 0 1px 0 rgb(255 255 255 / 10%);
+}
+
+.glass-reflection-canvas {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  transform: translate3d(-224px, -224px, 0);
+  transform-origin: top left;
+  will-change: transform;
+  contain: strict;
+}
+
+.interactive-glass {
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.interactive-glass:hover,
+.interactive-glass:focus-visible {
+  --glass-highlight-alpha: 7%;
+  --glass-highlight-stop: 42%;
+  --glass-surface-tint: linear-gradient(
+    180deg,
+    rgb(from var(--ui-accent) r g b / 11%),
+    rgb(from var(--ui-accent) r g b / 5%)
+  );
+  border-color: transparent;
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 24%),
+    0 0 0 1px rgb(from var(--ui-accent) r g b / 10%),
+    0 12px 30px rgb(0 0 0 / 32%);
+}
+
+.interactive-glass:focus-visible {
+  --glass-edge-color: rgb(from var(--ui-accent) r g b / 38%);
+  box-shadow:
+    0 0 0 2px rgb(from var(--ui-accent) r g b / 30%),
+    0 12px 30px rgb(0 0 0 / 32%);
+}
+
+.interactive-glass:active {
+  transform: translateY(1px) scale(0.995);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --ui-surface: rgb(16 17 16 / 96%);
+    --ui-surface-strong: rgb(8 9 9 / 98%);
+  }
+
+  :is(.glass-surface, .glass-menu, .glass-card, .glass-control) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root {
+    --ui-surface: rgb(16 17 16 / 94%);
+    --ui-surface-strong: rgb(8 9 9 / 98%);
+    --ui-fill-hover: rgb(238 247 241 / 21%);
+    --ui-stroke: rgb(238 247 241 / 31%);
+  }
+
+  .glass-reflection-canvas {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interactive-glass {
+    transition: none;
+  }
+
+  .interactive-glass:active {
+    transform: none;
+  }
+}

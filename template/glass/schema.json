@@ -1,0 +1,15 @@
+{
+  "id": "glass",
+  "schemaVersion": 2,
+  "name": "Grindfesta glass",
+  "description": "Liquid glass inspired glowing glass UI. A bit harder on performance",
+  "runtime": "svelte",
+  "contract": "grindfesta-game-ui-v1",
+  "variables": {
+    "glassAccent": {
+      "name": "Glass accent color",
+      "value": "#047857",
+      "flavour": "Hex color used by glass highlights, controls, and progress."
+    }
+  }
+}

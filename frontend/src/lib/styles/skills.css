@@ -1,0 +1,92 @@
+.skill-editor {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  align-content: start;
+  gap: 16px;
+  padding: 18px;
+  overflow-y: auto;
+  border-right: 1px solid var(--ui-stroke);
+}
+
+.skill-error {
+  margin: 0;
+}
+
+.skill-create-form {
+  display: grid;
+  gap: 8px;
+}
+
+.skill-create-form > .glass-control {
+  width: 100%;
+}
+
+.skill-form-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.skill-form-actions > .glass-control {
+  width: 100%;
+}
+
+.skill-cancel {
+  width: 100%;
+}
+
+.skill-icon-action,
+.skill-definition-content {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.skill-icon-action i,
+.skill-definition-content i {
+  width: 18px;
+  flex: 0 0 18px;
+  text-align: center;
+}
+
+.skill-error {
+  color: var(--ui-danger);
+  font-size: 0.78rem;
+}
+
+.skill-definition-list {
+  display: grid;
+  gap: 6px;
+}
+
+.skill-definition-list > .glass-control {
+  width: 100%;
+}
+
+.skill-definition {
+  justify-items: start;
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 12px;
+  overflow: hidden;
+  color: var(--ui-text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skill-definition-content span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 720px) {
+  .skill-editor {
+    border-right: 0;
+    border-bottom: 1px solid var(--ui-stroke);
+  }
+}

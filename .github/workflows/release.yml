@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing release tag to receive the rebuilt archives
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -12,88 +17,111 @@ env:
   BUN_VERSION: 1.3.14
 
 jobs:
-  frontend:
-    name: Build frontend
+  validation:
+    name: Validate source and build frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ env.BUN_VERSION }}
-      - name: Install dependencies
+      - name: Install Rust
+        run: |
+          rustup toolchain install stable --profile minimal --no-self-update
+          rustup default stable
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            backend/target
+          key: ${{ runner.os }}-${{ runner.arch }}-cargo-test-${{ hashFiles('backend/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-cargo-test-
+      - name: Check and build frontend
         working-directory: frontend
-        run: bun install --frozen-lockfile
-      - name: Check frontend
-        working-directory: frontend
-        run: bun run check
-      - name: Build frontend
-        working-directory: frontend
-        run: bun run build
+        run: |
+          bun install --frozen-lockfile
+          bun run check
+          bun run build
+      - name: Test backend
+        working-directory: backend
+        run: cargo test --locked --workspace
       - uses: actions/upload-artifact@v7
         with:
           name: frontend-dist
           path: frontend/dist
-          retention-days: 1
+          retention-days: 7
 
   native:
-    name: Build ${{ matrix.label }}
-    needs: frontend
+    name: Compile ${{ matrix.label }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - label: Windows x64
-            runner: windows-latest
-            bundle: grindfesta-engine-windows-x64
-            archive: grindfesta-engine-windows-x64.zip
-            binary: grindfesta-engine.exe
-            bun_binary: bun.exe
-          - label: macOS Apple Silicon
-            runner: macos-15
-            bundle: grindfesta-engine-macos-arm64
-            archive: grindfesta-engine-macos-arm64.zip
-            binary: grindfesta-engine
-            bun_binary: bun
-          - label: macOS Intel
-            runner: macos-15-intel
-            bundle: grindfesta-engine-macos-x64
-            archive: grindfesta-engine-macos-x64.zip
-            binary: grindfesta-engine
-            bun_binary: bun
+          - { label: Windows x64, runner: windows-latest, bundle: grindfesta-engine-windows-x64, binary: grindfesta-engine.exe }
+          - { label: macOS Apple Silicon, runner: macos-15, bundle: grindfesta-engine-macos-arm64, binary: grindfesta-engine }
+          - { label: macOS Intel, runner: macos-15-intel, bundle: grindfesta-engine-macos-x64, binary: grindfesta-engine }
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Rust
+        shell: bash
+        run: |
+          rustup toolchain install stable --profile minimal --no-self-update
+          rustup default stable
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            backend/target
+          key: ${{ runner.os }}-${{ runner.arch }}-cargo-release-${{ hashFiles('backend/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-cargo-release-
+      - name: Build backend
+        working-directory: backend
+        shell: bash
+        run: cargo build --locked --release -p main
+      - uses: actions/upload-artifact@v7
+        with:
+          name: native-${{ matrix.bundle }}
+          path: backend/target/release/${{ matrix.binary }}
+          retention-days: 7
+
+  package:
+    name: Package ${{ matrix.label }}
+    needs: [validation, native]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { label: Windows x64, runner: windows-latest, bundle: grindfesta-engine-windows-x64, binary: grindfesta-engine.exe, bun: bun.exe }
+          - { label: macOS Apple Silicon, runner: macos-15, bundle: grindfesta-engine-macos-arm64, binary: grindfesta-engine, bun: bun }
+          - { label: macOS Intel, runner: macos-15-intel, bundle: grindfesta-engine-macos-x64, binary: grindfesta-engine, bun: bun }
     runs-on: ${{ matrix.runner }}
     env:
       BUNDLE_NAME: ${{ matrix.bundle }}
-      ARCHIVE_NAME: ${{ matrix.archive }}
+      ARCHIVE_NAME: ${{ matrix.bundle }}.zip
       ENGINE_BINARY: ${{ matrix.binary }}
-      BUN_BINARY: ${{ matrix.bun_binary }}
+      BUN_BINARY: ${{ matrix.bun }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/download-artifact@v8
         with:
           name: frontend-dist
           path: frontend/dist
+      - uses: actions/download-artifact@v8
+        with:
+          name: native-${{ matrix.bundle }}
+          path: native
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ env.BUN_VERSION }}
-      - name: Install Rust
-        shell: bash
-        run: |
-          rustup toolchain install stable --profile minimal --no-self-update
-          rustup default stable
-      - name: Test backend
-        working-directory: backend
-        shell: bash
-        run: cargo test --locked --workspace
-      - name: Build backend
-        working-directory: backend
-        shell: bash
-        run: cargo build --locked --release -p main
       - name: Stage bundle
         shell: bash
         run: |
           mkdir -p "release/$BUNDLE_NAME/frontend" "release/$BUNDLE_NAME/runtime"
           cp -R frontend/dist/. "release/$BUNDLE_NAME/frontend/"
-          cp "backend/target/release/$ENGINE_BINARY" "release/$BUNDLE_NAME/$ENGINE_BINARY"
+          cp "native/$ENGINE_BINARY" "release/$BUNDLE_NAME/$ENGINE_BINARY"
           cp "$(command -v bun)" "release/$BUNDLE_NAME/runtime/$BUN_BINARY"
           cp third_party/bun/LICENSE.md "release/$BUNDLE_NAME/runtime/BUN-LICENSE.md"
           cp README.md "release/$BUNDLE_NAME/README.md"
@@ -102,67 +130,11 @@ jobs:
           fi
       - name: Smoke test macOS bundle
         if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          cd "release/$BUNDLE_NAME"
-          GRINDFESTA_NO_OPEN=1 "./$ENGINE_BINARY" >engine.log 2>&1 &
-          engine_pid=$!
-          cleanup() {
-            kill "$engine_pid" 2>/dev/null || true
-            wait "$engine_pid" 2>/dev/null || true
-            rm -f db db-shm db-wal engine.log
-            rmdir projects 2>/dev/null || true
-          }
-          trap cleanup EXIT
-          for attempt in {1..60}; do
-            if curl --fail --silent http://localhost:9002/health >/dev/null; then
-              break
-            fi
-            sleep 0.5
-          done
-          if ! curl --fail --silent http://localhost:9002/health | grep --quiet '^ok$'; then
-            cat engine.log
-            exit 1
-          fi
-          if ! curl --fail --silent http://localhost:9002/ | grep --quiet '<title>Grindfesta Engine</title>'; then
-            cat engine.log
-            exit 1
-          fi
+        run: bash scripts/smoke-release.sh "release/$BUNDLE_NAME" "$ENGINE_BINARY"
       - name: Smoke test Windows bundle
         if: runner.os == 'Windows'
         shell: pwsh
-        run: |
-          $bundle = Resolve-Path "release/$env:BUNDLE_NAME"
-          $env:GRINDFESTA_NO_OPEN = "1"
-          $process = Start-Process -FilePath "$bundle/$env:ENGINE_BINARY" `
-            -WorkingDirectory $bundle -PassThru `
-            -RedirectStandardOutput "$bundle/engine.out.log" `
-            -RedirectStandardError "$bundle/engine.err.log"
-          try {
-            $ready = $false
-            for ($attempt = 0; $attempt -lt 60; $attempt++) {
-              try {
-                $health = Invoke-WebRequest http://localhost:9002/health
-                if ($health.Content -eq "ok") { $ready = $true; break }
-              } catch {
-                Start-Sleep -Milliseconds 500
-              }
-            }
-            if (-not $ready) {
-              Get-Content "$bundle/engine.out.log", "$bundle/engine.err.log"
-              throw "Engine did not become ready"
-            }
-            $editor = Invoke-WebRequest http://localhost:9002/
-            if ($editor.Content -notmatch '<title>Grindfesta Engine</title>') {
-              throw "Editor HTML was not served"
-            }
-          } finally {
-            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-            $process.WaitForExit()
-            Remove-Item "$bundle/db", "$bundle/db-shm", "$bundle/db-wal", `
-              "$bundle/engine.out.log", "$bundle/engine.err.log" -Force -ErrorAction SilentlyContinue
-            Remove-Item "$bundle/projects" -Recurse -Force -ErrorAction SilentlyContinue
-          }
+        run: ./scripts/smoke-release.ps1 "release/$env:BUNDLE_NAME" "$env:ENGINE_BINARY"
       - name: Package macOS bundle
         if: runner.os == 'macOS'
         shell: bash
@@ -176,11 +148,13 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.bundle }}
-          path: ${{ matrix.archive }}
+          path: ${{ matrix.bundle }}.zip
+          compression-level: 0
           retention-days: 14
       - name: Attach archive to release
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || inputs.release_tag != ''
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ github.event.release.tag_name }}" "$ARCHIVE_NAME" --clobber
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+        run: gh release upload "$RELEASE_TAG" "$ARCHIVE_NAME" --clobber

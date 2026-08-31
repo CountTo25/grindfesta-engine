@@ -13,25 +13,18 @@ $process = Start-Process -FilePath "$bundlePath/$Binary" `
 try {
   $ready = $false
   for ($attempt = 0; $attempt -lt 60; $attempt++) {
-    try {
-      $health = Invoke-WebRequest http://localhost:9002/health
-      if ($health.StatusCode -eq 200) { $ready = $true; break }
-    } catch {
-      Start-Sleep -Milliseconds 500
-    }
+    & curl.exe --fail --silent --max-time 2 --output NUL http://localhost:9002/health
+    if ($LASTEXITCODE -eq 0) { $ready = $true; break }
+    Start-Sleep -Milliseconds 500
   }
   if (-not $ready) {
     Get-Content "$bundlePath/engine.out.log", "$bundlePath/engine.err.log"
     throw "Engine did not become ready"
   }
 
-  $editor = Invoke-WebRequest http://localhost:9002/
-  $editorContent = if ($editor.Content -is [byte[]]) {
-    [System.Text.Encoding]::UTF8.GetString($editor.Content)
-  } else {
-    [string]$editor.Content
-  }
-  if ($editor.StatusCode -ne 200 -or $editorContent -notmatch '<title>Grindfesta Engine</title>') {
+  $editorPath = "$bundlePath/editor-smoke.html"
+  & curl.exe --fail --silent --max-time 5 --output $editorPath http://localhost:9002/
+  if ($LASTEXITCODE -ne 0 -or (Get-Content $editorPath -Raw) -notmatch '<title>Grindfesta Engine</title>') {
     throw "Editor HTML was not served"
   }
 } finally {
@@ -40,6 +33,7 @@ try {
     $process.WaitForExit()
   }
   Remove-Item "$bundlePath/db", "$bundlePath/db-shm", "$bundlePath/db-wal", `
-    "$bundlePath/engine.out.log", "$bundlePath/engine.err.log" -Force -ErrorAction SilentlyContinue
+    "$bundlePath/engine.out.log", "$bundlePath/engine.err.log", `
+    "$bundlePath/editor-smoke.html" -Force -ErrorAction SilentlyContinue
   Remove-Item "$bundlePath/projects" -Recurse -Force -ErrorAction SilentlyContinue
 }
